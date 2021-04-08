@@ -37,51 +37,63 @@ ApplicationWindow {
             x: 5
             width: 80
             height: 40
-            Row {
-                id: row1
-                Rectangle {
-                    width: 40
-                    height: 40
-                    color: colorCode
-                }
 
-                Text {
-                    text: name
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.bold: true
+            Rectangle {
+                width: 80
+                height: 40
+                color: index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
+
+                Row{
+                    id: row1
+                    spacing: 10
+
+                    Text {
+                        text: date
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: amount
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: businessName
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
-                spacing: 10
             }
         }
         model: ListModel {
             id: listModelID
-            /*
             ListElement {
-                name: "Grey"
-                colorCode: "grey"
+                date: "1/1/2001"
+                amount: "$100.00"
+                businessName: "Test1"
             }
 
             ListElement {
-                name: "Red"
-                colorCode: "red"
+                date: "6/18/2009"
+                amount: "$1.99"
+                businessName: "Test2"
             }
 
             ListElement {
-                name: "Blue"
-                colorCode: "blue"
+                date: "5/21/2021"
+                amount: "$419.99"
+                businessName: "Test3"
             }
-
-            ListElement {
-                name: "Green"
-                colorCode: "green"
-            }
-            */
         }
 
     }
 
-    function addReceipt(/*date,amount,business,bTippable,tip*/) {
-        listModelID.append( "item" )
+    function addReceipt(date,amount,bTipped,tip,businessName) {
+        var totalNumber = Number(amount)
+        if( bTipped )totalNumber += Number(tip)
+        var totalAmount = "$" + totalNumber
+        var tippedAmount = (bTipped) ? "  ($" + amount + " + $" + tip + ")" : ""
+        totalAmount += tippedAmount
+        listModelID.append( {date: date, amount: totalAmount, businessName: businessName} )
     }
 
 }

@@ -115,8 +115,18 @@ Item {
             width: 92
             text: qsTr("Save")
             onClicked: {
-                mainwindow.addReceipt()
-                rootRectangle.visible = false
+                // first, ensure that there is a usable input
+                var amountNumber = Number(textInput_Amount.text)
+                var tipNumber = Number(textInput_TipAmount.text)
+                var bContinue = true
+                if( textInput_Business.text.trim()== "" )bContinue = false
+                if( amountNumber===0.0 && tipNumber===0.0 )bContinue = false
+
+                if( bContinue ){
+                    var shortDate = receiptDate.toLocaleDateString(Locale.ShortFormat)
+                    mainwindow.addReceipt(shortDate,textInput_Amount.text,checkBox_Tipped.checked,textInput_TipAmount.text,textInput_Business.text)
+                    rootRectangle.visible = false
+                }
             }
         }
 
@@ -142,6 +152,25 @@ Item {
             font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
+        }
+
+        CheckBox {
+            id: checkBox_Tipped
+            x: 14
+            y: 205
+            width: 113
+            height: 48
+            text: qsTr("Tipped")
+            onClicked: {
+                textInput_TipAmount.enabled = checked
+                if(checked){
+                    text1.text="Pre-tip"
+                    textInput_TipAmount.text = ""
+                }else{
+                    text1.text="Amount"
+                    textInput_TipAmount.text = "0.00"
+                }
+            }
         }
 
         TextField {
@@ -176,18 +205,6 @@ Item {
             }
             leftPadding: currencyLabel1.width + currencyLabel1.anchors.leftMargin + 2
             bottomPadding: (height - font.pixelSize)/2
-        }
-
-        CheckBox {
-            id: checkBox_Tippable
-            x: 14
-            y: 205
-            width: 113
-            height: 48
-            text: qsTr("Tippable")
-            onClicked: {
-                textInput_TipAmount.enabled = checked
-            }
         }
 
     }
