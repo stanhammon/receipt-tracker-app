@@ -35,49 +35,54 @@ ApplicationWindow {
         height: 394
         delegate: Item {
             x: 5
-            width: 80
+            width: parent.width
             height: 40
 
             Rectangle {
-                width: 80
+                width: parent.width
                 height: 40
                 color: index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
 
                 Row{
                     id: row1
-                    spacing: 10
+                    spacing: 20
 
                     Text {
                         text: date
                         anchors.verticalCenter: parent.verticalCenter
+                        width: 70
+                        horizontalAlignment: Text.AlignRight
                     }
 
                     Text {
                         text: amount
                         anchors.verticalCenter: parent.verticalCenter
+                        width: 170
+                         horizontalAlignment: Text.AlignRight
                     }
 
                     Text {
                         text: businessName
                         anchors.verticalCenter: parent.verticalCenter
                     }
+
                 }
             }
         }
         model: ListModel {
             id: listModelID
+
+            // create some test entries
             ListElement {
                 date: "1/1/2001"
-                amount: "$100.00"
+                amount: "$9999.00 ($9000.00 + $999.00)"
                 businessName: "Test1"
             }
-
             ListElement {
                 date: "6/18/2009"
                 amount: "$1.99"
                 businessName: "Test2"
             }
-
             ListElement {
                 date: "5/21/2021"
                 amount: "$419.99"
