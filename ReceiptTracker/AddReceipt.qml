@@ -6,6 +6,23 @@ Item {
     id: root
     property date receiptDate: new Date()
 
+    Rectangle{
+        id:cancelClickRectangle
+        anchors.centerIn: parent
+        width: mainwindow.width
+        height: mainwindow.height
+        color: "transparent"
+
+        // this mouse area catches clicks outside the 'Add Receipt' pop-up and cancels the pop-up
+        MouseArea {
+            anchors.fill: parent
+            propagateComposedEvents: true  // this passes clicks within the pop-up to the pop-up's MouseArea (so they can be ignored)
+            onClicked: button_Cancel.onClicked()
+        }
+    }
+
+
+
     Rectangle {
         anchors.centerIn: parent
         id: rootRectangle
@@ -14,6 +31,11 @@ Item {
         width: 400
         height: 330
         color: "#999999"
+
+        // this MouseArea is only here to catch (and ignore) any clicks on the pop-up, so they don't triggger a Cancel
+        MouseArea {
+            anchors.fill: parent
+        }
 
         Text {
             id: text_Date
@@ -105,6 +127,7 @@ Item {
             text: qsTr("Cancel")
             onClicked: {
                 rootRectangle.visible = false
+                cancelClickRectangle.visible = false
             }
         }
 
@@ -126,6 +149,7 @@ Item {
                     var shortDate = receiptDate.toLocaleDateString(Locale.ShortFormat)
                     mainwindow.addReceipt(shortDate,textInput_Amount.text,checkBox_Tipped.checked,textInput_TipAmount.text,textInput_Business.text)
                     rootRectangle.visible = false
+                    cancelClickRectangle.visible = false
                 }
             }
         }
