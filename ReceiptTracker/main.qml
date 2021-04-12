@@ -10,22 +10,10 @@ ApplicationWindow {
     title: qsTr("Scroll")
 
     Repeater{
+        id: standardButtonsRepeater
         model: 1
-        delegate: StandardButtons {}
+        delegate: StandardButtons {  }
     }
-    /*
-    Button {
-        id: button_Add
-        x: 25
-        y: 14
-        text: qsTr("Add Receipt")
-        onClicked: {
-            var component = Qt.createComponent("AddReceipt.qml")
-            var window    = component.createObject(mainwindow)
-            //window.show()
-        }
-    }
-    */
 
     Button {
         id: button_Delete
@@ -102,6 +90,7 @@ ApplicationWindow {
                                 receiptItem.selectionType = "single"
                                 parent.color = index % 2 == 0 ? "#CCEECC" : "#AACCAA"
                             }
+                            listView.testCurrentSelectionType()
 
                             receiptListModel.set( index, receiptItem )
                         }
@@ -117,6 +106,7 @@ ApplicationWindow {
                                 receiptItem.selectionType = "double"
                                 parent.color = index % 2 == 0 ? "#EECCCC" : "#CCAAAA"
                             }
+                            listView.testCurrentSelectionType()
 
                             receiptListModel.set( index, receiptItem )
                         }
@@ -127,7 +117,7 @@ ApplicationWindow {
                         onTriggered: receiptItemMouseArea.singleClick()
                     }
                     onClicked: {
-                        if(clickTimer.running){
+                        if( clickTimer.running ){
                             doubleClick()
                             clickTimer.stop()
                         }else{
@@ -150,6 +140,13 @@ ApplicationWindow {
                     currentSelectionType = thisType
                     break
                 }
+            }
+            if( currentSelectionType === "single" ){
+                standardButtonsRepeater.itemAt(0).visible = false
+            }else if( currentSelectionType === "double" ){
+                standardButtonsRepeater.itemAt(0).visible = false
+            }else{
+                standardButtonsRepeater.itemAt(0).visible = true
             }
         }
 
