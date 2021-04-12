@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
+import QtQml 2.12
 
 ApplicationWindow {
     id: mainwindow
@@ -82,8 +83,9 @@ ApplicationWindow {
                 }
 
                 MouseArea {
+                    id: receiptItemMouseArea
                     anchors.fill: parent
-                    onClicked: {
+                    function singleClick(){
                         listView.testCurrentSelectionType()
                         if( listView.currentSelectionType !== "double" ){  // proceed for "" and "single"
                             var receiptItem = receiptListModel.get(index)
@@ -92,13 +94,13 @@ ApplicationWindow {
                                 parent.color = index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
                             }else{
                                 receiptItem.selectionType = "single"
-                                parent.color = index % 2 == 0 ? "#EECCCC" : "#CCAAAA"
+                                parent.color = index % 2 == 0 ? "#CCEECC" : "#AACCAA"
                             }
 
                             receiptListModel.set( index, receiptItem )
                         }
                     }
-                    onDoubleClicked: {
+                    function doubleClick(){
                         listView.testCurrentSelectionType()
                         if( listView.currentSelectionType !== "single" ){  // proceed for "" and "double"
                             var receiptItem = receiptListModel.get(index)
@@ -111,6 +113,19 @@ ApplicationWindow {
                             }
 
                             receiptListModel.set( index, receiptItem )
+                        }
+                    }
+                    Timer{
+                        id: clickTimer
+                        interval: 200
+                        onTriggered: receiptItemMouseArea.singleClick()
+                    }
+                    onClicked: {
+                        if(clickTimer.running){
+                            doubleClick()
+                            clickTimer.stop()
+                        }else{
+                            clickTimer.restart()
                         }
                     }
                 }
