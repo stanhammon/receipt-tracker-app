@@ -3,6 +3,8 @@ import QtQuick.Controls 2.5
 
 Item {
     anchors.centerIn: parent
+    x: 0
+    y: 0
     id: root
     property date receiptDate: new Date()
 

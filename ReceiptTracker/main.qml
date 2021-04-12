@@ -9,6 +9,11 @@ ApplicationWindow {
     visible: true
     title: qsTr("Scroll")
 
+    Repeater{
+        model: 1
+        delegate: StandardButtons {}
+    }
+    /*
     Button {
         id: button_Add
         x: 25
@@ -20,6 +25,7 @@ ApplicationWindow {
             //window.show()
         }
     }
+    */
 
     Button {
         id: button_Delete
