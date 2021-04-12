@@ -9,7 +9,7 @@ ApplicationWindow {
     title: qsTr("Scroll")
 
     Button {
-        id: button
+        id: button_Add
         x: 25
         y: 14
         text: qsTr("Add Receipt")
@@ -26,12 +26,14 @@ ApplicationWindow {
         y: 14
         text: qsTr("Delete")
         onClicked: {
-            // remove Receipts that has been marked as 'selected'
-            for (var i=0; i<receiptListModel.count; ){
-                if( receiptListModel.get(i).isSelected === "yes" ){
-                    receiptListModel.remove(i);
-                }else{
-                    i++
+            // remove Receipts that has been marked as 'double'
+            if( listView.currentSelectionType === "double" ){
+                for (var i=0; i<receiptListModel.count; ){
+                    if( receiptListModel.get(i).selectionType === "double" ){
+                        receiptListModel.remove(i);
+                    }else{
+                        i++
+                    }
                 }
             }
         }
@@ -82,22 +84,54 @@ ApplicationWindow {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
+                        listView.testCurrentSelectionType()
+                        if( listView.currentSelectionType !== "double" ){  // proceed for "" and "single"
+                            var receiptItem = receiptListModel.get(index)
+                            if( receiptItem.selectionType !== "" ){
+                                receiptItem.selectionType = ""
+                                parent.color = index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
+                            }else{
+                                receiptItem.selectionType = "single"
+                                parent.color = index % 2 == 0 ? "#EECCCC" : "#CCAAAA"
+                            }
 
-                        var test = index
-                        var receiptItem = receiptListModel.get(index)
-                        if( receiptItem.isSelected === "yes" ){
-                            receiptItem.isSelected = ""
-                            parent.color = index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
-                        }else{
-                            receiptItem.isSelected = "yes"
-                            parent.color = "#999999"
+                            receiptListModel.set( index, receiptItem )
                         }
+                    }
+                    onDoubleClicked: {
+                        listView.testCurrentSelectionType()
+                        if( listView.currentSelectionType !== "single" ){  // proceed for "" and "double"
+                            var receiptItem = receiptListModel.get(index)
+                            if( receiptItem.selectionType !== "" ){
+                                receiptItem.selectionType = ""
+                                parent.color = index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
+                            }else{
+                                receiptItem.selectionType = "double"
+                                parent.color = index % 2 == 0 ? "#EECCCC" : "#CCAAAA"
+                            }
 
-                        receiptListModel.set( index, receiptItem )
+                            receiptListModel.set( index, receiptItem )
+                        }
                     }
                 }
             }
         }
+
+        // this variable contains the currently active selection mode (after being update by 'testCurrentSelectionType()')
+        property var currentSelectionType: ""
+
+        //  this function is used to limit selection to a single type at a time (either singleclick of doubleclick)
+        function testCurrentSelectionType(){
+            currentSelectionType = ""
+            for (var i=0; i<receiptListModel.count; i++ ){
+                var thisType = receiptListModel.get(i).selectionType
+                if( thisType !== "" ){
+                    currentSelectionType = thisType
+                    break
+                }
+            }
+        }
+
         model: ListModel {
             id: receiptListModel
 
@@ -106,19 +140,19 @@ ApplicationWindow {
                 date: "1/1/2001"
                 amount: "$9999.00 ($9000.00 + $999.00)"
                 businessName: "Test1"
-                isSelected: ""
+                selectionType: ""
             }
             ListElement {
                 date: "6/18/2009"
                 amount: "$1.99"
                 businessName: "Test2"
-                isSelected: ""
+                selectionType: ""
             }
             ListElement {
                 date: "5/21/2021"
                 amount: "$419.99"
                 businessName: "Test3"
-                isSelected: ""
+                selectionType: ""
             }
         }
     }
@@ -129,7 +163,7 @@ ApplicationWindow {
         var totalAmount = "$" + totalNumber
         var tippedAmount = (bTipped) ? "  ($" + amount + " + $" + tip + ")" : ""
         totalAmount += tippedAmount
-        listModel.append( {date: date, amount: totalAmount, businessName: businessName, isSelected: ""} )
+        receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: ""} )
     }
 
 }
