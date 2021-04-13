@@ -15,23 +15,23 @@ ApplicationWindow {
         delegate: StandardButtons {  }
     }
 
-    Button {
-        id: button_Delete
-        x: 267
-        y: 14
-        text: qsTr("Delete")
-        onClicked: {
-            // remove Receipts that has been marked as 'double'
-            if( listView.currentSelectionType === "double" ){
-                for (var i=0; i<receiptListModel.count; ){
-                    if( receiptListModel.get(i).selectionType === "double" ){
-                        receiptListModel.remove(i);
-                    }else{
-                        i++
-                    }
-                }
-            }
+    Repeater{
+        id: deleteButtonsRepeater
+        model: 1
+        delegate: DeleteButtons { visible: false }
+    }
+
+    function setColor( index, useCase ){
+        if( index%2  === 0 ){
+            if( useCase === "normal" )return "#EEEEEE"
+            else if( useCase === "singleClicked" )return "#CCEECC"
+            else if( useCase === "doubleClicked" )return "#EECCCC"
+        }else{
+            if( useCase === "normal" )return "#CCCCCC"
+            else if( useCase === "singleClicked" )return "#AACCAA"
+            else if( useCase === "doubleClicked" )return "#CCAAAA"
         }
+        return "#FFFFOO"  // yellow indicates a logic failure above
     }
 
     ListView {
@@ -49,7 +49,7 @@ ApplicationWindow {
                 id: receiptRectangle
                 width: parent.width - 10  // this is the 'x' above * 2
                 height: 40
-                color: index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
+                color: setColor( index, "normal" )
 
                 Row{
                     id: row1
@@ -76,19 +76,22 @@ ApplicationWindow {
 
                 }
 
+
+                /////////////standardButtonsRepeater.itemAt(0).setShowHiddenButtonVisibility(true)
+
                 MouseArea {
                     id: receiptItemMouseArea
                     anchors.fill: parent
                     function singleClick(){
-                        listView.testCurrentSelectionType()
+                        //listView.testCurrentSelectionType()
                         if( listView.currentSelectionType !== "double" ){  // proceed for "" and "single"
                             var receiptItem = receiptListModel.get(index)
                             if( receiptItem.selectionType !== "" ){
                                 receiptItem.selectionType = ""
-                                parent.color = index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
+                                parent.color = setColor( index, "normal" )
                             }else{
                                 receiptItem.selectionType = "single"
-                                parent.color = index % 2 == 0 ? "#CCEECC" : "#AACCAA"
+                                parent.color = setColor( index, "singleClicked" )
                             }
                             listView.testCurrentSelectionType()
 
@@ -96,15 +99,15 @@ ApplicationWindow {
                         }
                     }
                     function doubleClick(){
-                        listView.testCurrentSelectionType()
+                        //listView.testCurrentSelectionType()  add this to a startup
                         if( listView.currentSelectionType !== "single" ){  // proceed for "" and "double"
                             var receiptItem = receiptListModel.get(index)
                             if( receiptItem.selectionType !== "" ){
                                 receiptItem.selectionType = ""
-                                parent.color = index % 2 == 0 ? "#EEEEEE" : "#CCCCCC"
+                                parent.color = setColor( index, "normal" )
                             }else{
                                 receiptItem.selectionType = "double"
-                                parent.color = index % 2 == 0 ? "#EECCCC" : "#CCAAAA"
+                                parent.color = setColor( index, "doubleClicked" )
                             }
                             listView.testCurrentSelectionType()
 
@@ -143,10 +146,13 @@ ApplicationWindow {
             }
             if( currentSelectionType === "single" ){
                 standardButtonsRepeater.itemAt(0).visible = false
+                deleteButtonsRepeater.itemAt(0).visible = false
             }else if( currentSelectionType === "double" ){
                 standardButtonsRepeater.itemAt(0).visible = false
+                deleteButtonsRepeater.itemAt(0).visible = true
             }else{
                 standardButtonsRepeater.itemAt(0).visible = true
+                deleteButtonsRepeater.itemAt(0).visible = false
             }
         }
 

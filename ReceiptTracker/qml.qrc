@@ -4,5 +4,6 @@
         <file>qtquickcontrols2.conf</file>
         <file>AddReceipt.qml</file>
         <file>StandardButtons.qml</file>
+        <file>DeleteButtons.qml</file>
     </qresource>
 </RCC>
