@@ -3,8 +3,6 @@ import QtQuick.Controls 2.5
 import QtQml 2.12
 
 Item{
-    property var animationDuration: 2000
-
     property bool bBlockNextTimer: false
     property bool bBlockWasTimer: false
     Timer{
@@ -22,7 +20,7 @@ Item{
     }
     Timer{
         id: wasActiveTimerHide
-        interval: animationDuration
+        interval: mainwindow.animationDuration
         onTriggered: {
             if( !bBlockWasTimer ){
                 //mainwindow.wasActive = "none"

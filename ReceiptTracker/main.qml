@@ -12,6 +12,7 @@ ApplicationWindow {
     property var wasActive: "none"
     property var isActive: "standardButtons"
     property var nextActive: "none"
+    property var animationDuration: 1000
 
     Repeater{
         id: standardButtonsRepeater
