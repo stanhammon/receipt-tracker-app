@@ -8,12 +8,12 @@ Item{
     property bool bBlockNextTimer: false
     property bool bBlockWasTimer: false
     Timer{
-        id: nextActiveTimerDelete
+        id: nextActiveTimerHide
         interval: 0
         onTriggered: {
             if( !bBlockNextTimer ){
                 //mainwindow.wasActive = "none"
-                mainwindow.isActive = "deleteButtons"
+                mainwindow.isActive = "hideButtons"
                 mainwindow.nextActive = "none"
                 bBlockWasTimer = true
             }
@@ -21,12 +21,12 @@ Item{
         }
     }
     Timer{
-        id: wasActiveTimerDelete
+        id: wasActiveTimerHide
         interval: animationDuration
         onTriggered: {
             if( !bBlockWasTimer ){
                 //mainwindow.wasActive = "none"
-                deleteButtonsRow.state = "preActiveDelete"
+                hideButtonsRow.state = "preActiveHide"
                 bBlockNextTimer = true
             }
             bBlockWasTimer = false
@@ -35,58 +35,58 @@ Item{
 
     Row{
         x: -mainwindow.width
-        id: deleteButtonsRow
+        id: hideButtonsRow
         width: mainwindow.width
 
         states: [
             State {
-                name: "preActiveDelete"; when: mainwindow.nextActive === "deleteButtons"
-                PropertyChanges { target: deleteButtonsRow; x: -mainwindow.width }
+                name: "preActiveHide"; when: mainwindow.nextActive === "hideButtons"
+                PropertyChanges { target: hideButtonsRow; x: -mainwindow.width }
                 StateChangeScript{
-                    name: "preScriptDelete"
+                    name: "preScriptHide"
                     script: {
-                        nextActiveTimerDelete.start()
+                        nextActiveTimerHide.start()
                     }
                 }
             },
             State {
-                name: "activeDelete"; when: mainwindow.isActive === "deleteButtons"
-                PropertyChanges { target: deleteButtonsRow; x: 0 }
+                name: "activeHide"; when: mainwindow.isActive === "hideButtons"
+                PropertyChanges { target: hideButtonsRow; x: 0 }
             },
             State {
-                name: "postActiveDelete"; when: mainwindow.wasActive === "deleteButtons"
-                PropertyChanges { target: deleteButtonsRow; x: mainwindow.width }
+                name: "postActiveHide"; when: mainwindow.wasActive === "hideButtons"
+                PropertyChanges { target: hideButtonsRow; x: mainwindow.width }
                 StateChangeScript{
-                    name: "postScriptDelete"
-                    script: wasActiveTimerDelete.start()
+                    name: "postScriptHide"
+                    script: wasActiveTimerHide.start()
                 }
             }
         ]
 
         transitions: [
             Transition {
-                from: "preActiveDelete"; to: "activeDelete";
+                from: "preActiveHide"; to: "activeHide";
                 PropertyAnimation{ property: "x"; duration: animationDuration; easing.type: Easing.InOutQuad }
-                //ScriptAction { scriptName: "preScriptDelete" }
+                //ScriptAction { scriptName: "preScriptHide" }
             },
             Transition {
-                from: "activeDelete"; to: "postActiveDelete";
+                from: "activeHide"; to: "postActiveHide";
                 PropertyAnimation{ property: "x"; duration: animationDuration; easing.type: Easing.InOutQuad }
-                //ScriptAction { scriptName: "postScriptDelete" }
+                //ScriptAction { scriptName: "postScriptHide" }
             }
         ]
 
         Button {
-            id: button_Delete
+            id: button_Hide
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: 30
-            text: qsTr("Delete")
+            text: qsTr("Hide Receipts")
             onClicked: {
-                // remove Receipts that have been marked as 'double'
-                if( listView.currentSelectionType === "double" ){
+                // hide Receipts that have been marked as 'double'
+                if( listView.currentSelectionType === "single" ){
                     for (var i=0; i<receiptListModel.count; ){
-                        if( receiptListModel.get(i).selectionType === "double" ){
-                            receiptListModel.remove(i);
+                        if( receiptListModel.get(i).selectionType === "single" ){
+                            receiptListModel.visible(i);
                         }else{
                             i++
                         }
@@ -96,7 +96,7 @@ Item{
         }
 
         Button {
-            id: button_ClearSelection
+            id: button_ClearSelection2
             anchors.right: parent.right
             anchors.margins: 30
             text: qsTr("Clear Selection")

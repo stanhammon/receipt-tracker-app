@@ -9,6 +9,10 @@ ApplicationWindow {
     visible: true
     title: qsTr("Scroll")
 
+    property var wasActive: "none"
+    property var isActive: "standardButtons"
+    property var nextActive: "none"
+
     Repeater{
         id: standardButtonsRepeater
         model: 1
@@ -18,7 +22,13 @@ ApplicationWindow {
     Repeater{
         id: deleteButtonsRepeater
         model: 1
-        delegate: DeleteButtons { visible: false }
+        delegate: DeleteButtons {  }
+    }
+
+    Repeater{
+        id: hideButtonsRepeater
+        model: 1
+        delegate: HideButtons {  }
     }
 
     function setColor( index, useCase ){
@@ -145,14 +155,23 @@ ApplicationWindow {
                 }
             }
             if( currentSelectionType === "single" ){
-                standardButtonsRepeater.itemAt(0).visible = false
-                deleteButtonsRepeater.itemAt(0).visible = false
+                //standardButtonsRepeater.itemAt(0).visible = false
+                //deleteButtonsRepeater.itemAt(0).visible = false
+                if( isActive != "hideButtons" ){
+                    wasActive = isActive
+                    isActive = "none"
+                    nextActive = "hideButtons"
+                }
             }else if( currentSelectionType === "double" ){
-                standardButtonsRepeater.itemAt(0).visible = false
-                deleteButtonsRepeater.itemAt(0).visible = true
+                if( isActive != "deleteButtons" ){
+                    wasActive = isActive
+                    isActive = "none"
+                    nextActive = "deleteButtons"
+                }
             }else{
-                standardButtonsRepeater.itemAt(0).visible = true
-                deleteButtonsRepeater.itemAt(0).visible = false
+                wasActive = isActive
+                isActive = "none"
+                nextActive = "standardButtons"
             }
         }
 

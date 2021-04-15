@@ -5,5 +5,6 @@
         <file>AddReceipt.qml</file>
         <file>StandardButtons.qml</file>
         <file>DeleteButtons.qml</file>
+        <file>HideButtons.qml</file>
     </qresource>
 </RCC>
