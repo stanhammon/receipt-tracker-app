@@ -80,15 +80,24 @@ Item{
             anchors.margins: 30
             text: qsTr("Hide Receipts")
             onClicked: {
-                // hide Receipts that have been marked as 'double'
+                // hide Receipts that have been marked as 'single'
                 if( listView.currentSelectionType === "single" ){
-                    for (var i=0; i<receiptListModel.count; ){
-                        if( receiptListModel.get(i).selectionType === "single" ){
-                            receiptListModel.visible(i);
-                        }else{
-                            i++
+                    for (var i=0; i<receiptListModel.count; i++ ){
+                        var listItem = receiptListModel.get(i)
+                        if( listItem.selectionType === "single" ){
+                            var uid = listItem.uuid
+                            for (var j=0; j<hiddenReceiptsModel.count; j++ ){
+                                var hiddenListItem = hiddenReceiptsModel.get(j)
+                                if( hiddenListItem.uuid === uid ){
+                                    hiddenListItem.isVisible = false
+                                    hiddenListItem.selectionType = ""
+                                    hiddenReceiptsModel.set(j,hiddenListItem)
+                                    break
+                                }
+                            }
                         }
                     }
+                    listView.updateListModel(true)
                 }
             }
         }

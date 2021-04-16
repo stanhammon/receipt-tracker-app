@@ -31,6 +31,8 @@ Item{
         }
     }
 
+    function setShowHiddenButtonVisibility( bShow ){ button_ShowHidden.visible = bShow }
+
     Row{
         id: standardButtonsRow
         width: mainwindow.width
@@ -74,8 +76,6 @@ Item{
             }
         ]
 
-        function setShowHiddenButtonVisibility( bShow ){ button_ShowHidden.visible = bShow }
-
         Button {
             id: button_Add
             anchors.left: parent.left
@@ -96,10 +96,14 @@ Item{
             visible: false
             property alias showHidden_buttonVisibility : button_ShowHidden.visible
             onClicked: {
-                /*
-                var component = Qt.createComponent("AddReceipt.qml")
-                var window    = component.createObject(mainwindow)
-                */
+                for (var j=0; j<hiddenReceiptsModel.count; j++ ){
+                    var hiddenListItem = hiddenReceiptsModel.get(j)
+                    if( hiddenListItem.isVisible === false ){
+                        hiddenListItem.isVisible = true
+                        hiddenReceiptsModel.set(j,hiddenListItem)
+                    }
+                }
+                listView.updateListModel(true)
             }
         }
 

@@ -51,6 +51,7 @@ ApplicationWindow {
         y: 68
         width: 608
         height: 394
+
         delegate: Item {
             x: 5
             width: parent.width
@@ -86,9 +87,6 @@ ApplicationWindow {
                     }
 
                 }
-
-
-                /////////////standardButtonsRepeater.itemAt(0).setShowHiddenButtonVisibility(true)
 
                 MouseArea {
                     id: receiptItemMouseArea
@@ -170,14 +168,22 @@ ApplicationWindow {
                     nextActive = "deleteButtons"
                 }
             }else{
-                wasActive = isActive
-                isActive = "none"
-                nextActive = "standardButtons"
+                if( isActive != "standardButtons" ){
+                    wasActive = isActive
+                    isActive = "none"
+                    nextActive = "standardButtons"
+                }
             }
         }
 
+        // this is the visible list model, some items from the true list (hiddenReceiptsModel) may not be included here if they are currently hidden
         model: ListModel {
             id: receiptListModel
+        }
+
+        // this is the true list model, containing all receipts whether they are currently visible or not
+        ListModel {
+            id: hiddenReceiptsModel
 
             // create some test entries
             ListElement {
@@ -185,19 +191,45 @@ ApplicationWindow {
                 amount: "$9999.00 ($9000.00 + $999.00)"
                 businessName: "Test1"
                 selectionType: ""
+                isVisible: true
+                uuid: 1
             }
             ListElement {
                 date: "6/18/2009"
                 amount: "$1.99"
                 businessName: "Test2"
                 selectionType: ""
+                isVisible: true
+                uuid: 2
             }
             ListElement {
                 date: "5/21/2021"
                 amount: "$419.99"
                 businessName: "Test3"
                 selectionType: ""
+                isVisible: true
+                uuid: 3
             }
+
+            Component.onCompleted: listView.updateListModel()
+        }
+
+        function updateListModel(bResetSelectionType){
+            receiptListModel.clear()
+            var bHasHiddenReceipts = false
+
+            for( var i=0; i<hiddenReceiptsModel.count; i++ ){
+                var itemCopy = hiddenReceiptsModel.get(i)
+                if( itemCopy.isVisible === true )
+                    receiptListModel.append(itemCopy)
+                else
+                    bHasHiddenReceipts = true;
+            }
+            if( bResetSelectionType === true )
+                testCurrentSelectionType()
+
+            // show the Unhide Receipts button, if needed
+            standardButtonsRepeater.itemAt(0).setShowHiddenButtonVisibility(bHasHiddenReceipts)
         }
     }
 
@@ -207,7 +239,9 @@ ApplicationWindow {
         var totalAmount = "$" + totalNumber
         var tippedAmount = (bTipped) ? "  ($" + amount + " + $" + tip + ")" : ""
         totalAmount += tippedAmount
-        receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: ""} )
+        var uid = Date.now()  // using milliseconds since Unix Epoch (1/1/1970) as a UID - fine since receipts have to be manually entered
+        receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", parentRefernce: "", isVisible:true, uid} )
+        hiddenReceiptsModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", parentRefernce: "", isVisible:true, uid} )
     }
 
 }
