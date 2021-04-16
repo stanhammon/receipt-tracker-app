@@ -99,10 +99,14 @@ Item{
             anchors.margins: 30
             text: qsTr("Clear Selection")
             onClicked: {
-                /*
-                var component = Qt.createComponent("AddReceipt.qml")
-                var window    = component.createObject(mainwindow)
-                */
+                for (var i=0; i<receiptListModel.count; i++ ){
+                    var listItem = receiptListModel.get(i)
+                    if( listItem.selectionType === "double" ){
+                        listItem.selectionType = ""
+                        receiptListModel.set(i,listItem)
+                    }
+                }
+                listView.updateListModel(true)
             }
         }
     }
