@@ -185,6 +185,7 @@ ApplicationWindow {
         ListModel {
             id: hiddenReceiptsModel
 
+            /*
             // create some test entries
             ListElement {
                 date: "1/1/2001"
@@ -212,8 +213,21 @@ ApplicationWindow {
             }
 
             Component.onCompleted: listView.updateListModel()
+            */
+
+            // this function is called when 'JSON.stringify()' is invoked - needed because QML will by default only output metadata from a ListModel
+            function toJSON(){
+                var stringified = "["
+                for( var i=0; i<hiddenReceiptsModel.count; i++ ){
+                    stringified += JSON.stringify(hiddenReceiptsModel.get(i))
+                    if( i < hiddenReceiptsModel.count-1)stringified += ","
+                }
+                stringified = stringified + "]"
+                return stringified
+            }
         }
 
+        // rebuilds the visible version of the listModel using the isVisible field in the hidden list model as a guide
         function updateListModel(bResetSelectionType){
             receiptListModel.clear()
             var bHasHiddenReceipts = false
@@ -228,7 +242,7 @@ ApplicationWindow {
             if( bResetSelectionType === true )
                 testCurrentSelectionType()
 
-            // show the Unhide Receipts button, if needed
+            // show the Unhide Receipts button, if needed (i.e., if there are any hidden receipts present)
             standardButtonsRepeater.itemAt(0).setShowHiddenButtonVisibility(bHasHiddenReceipts)
         }
     }
@@ -240,8 +254,31 @@ ApplicationWindow {
         var tippedAmount = (bTipped) ? "  ($" + amount + " + $" + tip + ")" : ""
         totalAmount += tippedAmount
         var uid = Date.now()  // using milliseconds since Unix Epoch (1/1/1970) as a UID - fine since receipts have to be manually entered
-        receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", parentRefernce: "", isVisible:true, uid} )
-        hiddenReceiptsModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", parentRefernce: "", isVisible:true, uid} )
+        receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid} )
+        hiddenReceiptsModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid} )
+
+        listView.currentIndex = listView.count-1  // scroll to the newly added receipt
+        saveListModel()
+    }
+
+    Component.onCompleted: loadListModel()
+
+    function saveListModel() {
+        var datastore = JSON.stringify(hiddenReceiptsModel)
+        datastore = JSON.parse(datastore)  // this hack is to remove the extra set of "" being erroniously put around the JSON output
+        fileio.write( "receipts.json", datastore )
+    }
+
+    function loadListModel() {
+        var datastore = fileio.read( "receipts.json" )
+        if (datastore !== ""){
+            var datamodel = JSON.parse(datastore)
+            hiddenReceiptsModel.clear()
+            for (var i = 0; i < datamodel.length; i++){
+                hiddenReceiptsModel.append(datamodel[i])
+            }
+            listView.updateListModel(true)
+        }
     }
 
 }

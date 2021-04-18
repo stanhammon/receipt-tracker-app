@@ -29,3 +29,6 @@ DISTFILES += \
     StandardButtons.qml \
     main.qml \
     qtquickcontrols2.conf
+
+HEADERS += \
+    FileIO.h

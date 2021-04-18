@@ -89,6 +89,7 @@ Item{
                             i++
                         }
                     }
+                    mainwindow.saveListModel()
                 }
             }
         }

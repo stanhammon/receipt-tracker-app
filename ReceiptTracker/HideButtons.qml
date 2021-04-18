@@ -98,6 +98,7 @@ Item{
                         }
                     }
                     listView.updateListModel(true)
+                    mainwindow.saveListModel()
                 }
             }
         }
