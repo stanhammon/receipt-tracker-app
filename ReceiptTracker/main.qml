@@ -12,7 +12,9 @@ ApplicationWindow {
     property var wasActive: "none"
     property var isActive: "standardButtons"
     property var nextActive: "none"
-    property var animationDuration: 1000
+    property var animationDuration: 750
+    property var buttonFontSize: 14
+    property var textFontSize: 12
 
     Repeater{
         id: standardButtonsRepeater
@@ -47,10 +49,11 @@ ApplicationWindow {
 
     ListView {
         id: listView
-        x: 15
-        y: 68
-        width: 608
-        height: 394
+        x: 5
+        y: 60
+        width: mainwindow.width-10
+        height: mainwindow.height-70
+        clip: true
 
         delegate: Item {
             x: 5
@@ -65,23 +68,26 @@ ApplicationWindow {
 
                 Row{
                     id: row1
-                    spacing: 20
+                    spacing: 10
 
                     Text {
+                        font.pointSize: mainwindow.textFontSize
                         text: date
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 70
+                        width: 5.4 * mainwindow.textFontSize
                         horizontalAlignment: Text.AlignRight
                     }
 
                     Text {
+                        font.pointSize: mainwindow.textFontSize
                         text: amount
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 170
-                         horizontalAlignment: Text.AlignRight
+                        width: 12 * mainwindow.textFontSize
+                        horizontalAlignment: Text.AlignRight
                     }
 
                     Text {
+                        font.pointSize: mainwindow.textFontSize
                         text: businessName
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -185,12 +191,11 @@ ApplicationWindow {
         ListModel {
             id: hiddenReceiptsModel
 
-            /*
             // create some test entries
             ListElement {
                 date: "1/1/2001"
-                amount: "$9999.00 ($9000.00 + $999.00)"
-                businessName: "Test1"
+                amount: "$9999.00 (9000.00+999.00)"
+                businessName: "Test 1"
                 selectionType: ""
                 isVisible: true
                 uuid: 1
@@ -198,7 +203,7 @@ ApplicationWindow {
             ListElement {
                 date: "6/18/2009"
                 amount: "$1.99"
-                businessName: "Test2"
+                businessName: "Test 2"
                 selectionType: ""
                 isVisible: true
                 uuid: 2
@@ -206,14 +211,13 @@ ApplicationWindow {
             ListElement {
                 date: "5/21/2021"
                 amount: "$419.99"
-                businessName: "Test3"
+                businessName: "Test 3"
                 selectionType: ""
                 isVisible: true
                 uuid: 3
             }
 
             Component.onCompleted: listView.updateListModel()
-            */
 
             // this function is called when 'JSON.stringify()' is invoked - needed because QML will by default only output metadata from a ListModel
             function toJSON(){
@@ -251,7 +255,7 @@ ApplicationWindow {
         var totalNumber = Number(amount)
         if( bTipped )totalNumber += Number(tip)
         var totalAmount = "$" + totalNumber
-        var tippedAmount = (bTipped) ? "  ($" + amount + " + $" + tip + ")" : ""
+        var tippedAmount = (bTipped) ? " (" + amount + "+" + tip + ")" : ""
         totalAmount += tippedAmount
         var uid = Date.now()  // using milliseconds since Unix Epoch (1/1/1970) as a UID - fine since receipts have to be manually entered
         receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid} )

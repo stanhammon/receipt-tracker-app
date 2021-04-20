@@ -79,6 +79,7 @@ Item{
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: 30
             text: qsTr("Hide Receipts")
+            font.pointSize: mainwindow.buttonFontSize
             onClicked: {
                 // hide Receipts that have been marked as 'single'
                 if( listView.currentSelectionType === "single" ){
@@ -108,6 +109,7 @@ Item{
             anchors.right: parent.right
             anchors.margins: 30
             text: qsTr("Clear Selection")
+            font.pointSize: mainwindow.buttonFontSize
             onClicked: {
                 for (var i=0; i<receiptListModel.count; i++ ){
                     var listItem = receiptListModel.get(i)

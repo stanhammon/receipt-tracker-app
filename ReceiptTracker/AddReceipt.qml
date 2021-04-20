@@ -27,6 +27,8 @@ Item {
 
     Rectangle {
         anchors.centerIn: parent
+        anchors.verticalCenterOffset: -mainwindow.height/6
+
         id: rootRectangle
         x: 0
         y: 0
@@ -75,6 +77,7 @@ Item {
             font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             bottomPadding: (height - font.pixelSize)/2
+            inputMethodHints: Qt.ImhDigitsOnly
             background: Rectangle {
                 radius: 4
                 //implicitWidth: parent.width
@@ -209,6 +212,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             text: "0.00"
             enabled: false
+            inputMethodHints: Qt.ImhDigitsOnly
             Text {
                 id: currencyLabel1
                 color: parent.color

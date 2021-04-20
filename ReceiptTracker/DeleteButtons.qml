@@ -79,6 +79,7 @@ Item{
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: 30
             text: qsTr("Delete")
+            font.pointSize: mainwindow.buttonFontSize
             onClicked: {
                 // remove Receipts that have been marked as 'double'
                 if( listView.currentSelectionType === "double" ){
@@ -99,6 +100,7 @@ Item{
             anchors.right: parent.right
             anchors.margins: 30
             text: qsTr("Clear Selection")
+            font.pointSize: mainwindow.buttonFontSize
             onClicked: {
                 for (var i=0; i<receiptListModel.count; i++ ){
                     var listItem = receiptListModel.get(i)

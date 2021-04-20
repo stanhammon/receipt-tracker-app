@@ -81,6 +81,7 @@ Item{
             anchors.left: parent.left
             anchors.margins: 30
             text: qsTr("Add Receipt")
+            font.pointSize: mainwindow.buttonFontSize
             onClicked: {
                 var component = Qt.createComponent("AddReceipt.qml")
                 var window    = component.createObject(mainwindow)
@@ -93,6 +94,7 @@ Item{
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: 30
             text: qsTr("Show Hidden")
+            font.pointSize: mainwindow.buttonFontSize
             visible: false
             property alias showHidden_buttonVisibility : button_ShowHidden.visible
             onClicked: {
@@ -113,6 +115,7 @@ Item{
             anchors.right: parent.right
             anchors.margins: 30
             text: qsTr("Copy")
+            font.pointSize: mainwindow.buttonFontSize
             onClicked: {
                 clipboardTextEdit.text = ""
 
