@@ -191,34 +191,6 @@ ApplicationWindow {
         ListModel {
             id: hiddenReceiptsModel
 
-            // create some test entries
-            ListElement {
-                date: "1/1/2001"
-                amount: "$9999.00 (9000.00+999.00)"
-                businessName: "Test 1"
-                selectionType: ""
-                isVisible: true
-                uuid: 1
-            }
-            ListElement {
-                date: "6/18/2009"
-                amount: "$1.99"
-                businessName: "Test 2"
-                selectionType: ""
-                isVisible: true
-                uuid: 2
-            }
-            ListElement {
-                date: "5/21/2021"
-                amount: "$419.99"
-                businessName: "Test 3"
-                selectionType: ""
-                isVisible: true
-                uuid: 3
-            }
-
-            Component.onCompleted: listView.updateListModel()
-
             // this function is called when 'JSON.stringify()' is invoked - needed because QML will by default only output metadata from a ListModel
             function toJSON(){
                 var stringified = "["
@@ -258,11 +230,30 @@ ApplicationWindow {
         var tippedAmount = (bTipped) ? " (" + amount + "+" + tip + ")" : ""
         totalAmount += tippedAmount
         var uid = Date.now()  // using milliseconds since Unix Epoch (1/1/1970) as a UID - fine since receipts have to be manually entered
-        receiptListModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid} )
-        hiddenReceiptsModel.append( {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid} )
 
+        var receiptJson = {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid}
+        insertReceiptByDate( receiptJson, date )
+
+        listView.updateListModel(true)
         listView.currentIndex = listView.count-1  // scroll to the newly added receipt
         saveListModel()
+    }
+
+    function insertReceiptByDate( receipt, dateString ){
+        var bInserted = false
+        var newReceiptDate = Date.parse(receipt.date)
+        for (var i=0; i<hiddenReceiptsModel.count-1; i++ ){
+            var receiptDate1 = Date.parse(hiddenReceiptsModel.get(i).date)
+            var receiptDate2 = Date.parse(hiddenReceiptsModel.get(i+1).date)
+
+            if( receiptDate1<=newReceiptDate && newReceiptDate<receiptDate2){
+                hiddenReceiptsModel.insert(i+1,receipt)
+                bInserted = true
+                break
+            }
+        }
+        if( bInserted === false )
+            hiddenReceiptsModel.append( receipt )
     }
 
     Component.onCompleted: loadListModel()
