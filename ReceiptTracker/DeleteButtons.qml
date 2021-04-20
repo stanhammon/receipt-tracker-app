@@ -83,13 +83,19 @@ Item{
             onClicked: {
                 // remove Receipts that have been marked as 'double'
                 if( listView.currentSelectionType === "double" ){
-                    for (var i=0; i<receiptListModel.count; ){
+                    for (var i=0; i<receiptListModel.count; i++ ){
                         if( receiptListModel.get(i).selectionType === "double" ){
-                            receiptListModel.remove(i);
-                        }else{
-                            i++
+                            // find the hidden copy of the receipt and delete it
+                            var uid = receiptListModel.get(i).uuid
+                            for (var j=0; j<hiddenReceiptsModel.count; j++ ){
+                                if( hiddenReceiptsModel.get(j).uuid === uid ){
+                                    hiddenReceiptsModel.remove(j);
+                                    break
+                                }
+                            }
                         }
                     }
+                    listView.updateListModel(true)
                     mainwindow.saveListModel()
                 }
             }
