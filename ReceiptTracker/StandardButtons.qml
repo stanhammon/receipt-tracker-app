@@ -114,11 +114,19 @@ Item{
             anchors.margins: 30
             text: qsTr("Copy")
             onClicked: {
-                standardButtonsRow.testInt = standardButtonsRow.testInt + 1
-                /*
-                var component = Qt.createComponent("AddReceipt.qml")
-                var window    = component.createObject(mainwindow)
-                */
+                clipboardTextEdit.text = ""
+
+                // write all the receipts to the hidden TextEdit
+                for( var i=0; i<hiddenReceiptsModel.count; i++ ){
+                    var receiptText = ""
+                    var receipt = hiddenReceiptsModel.get(i)
+                    receiptText = receipt.date + "   " + receipt.amount + "   " + receipt.businessName
+                    clipboardTextEdit.append(receiptText)
+                }
+
+                // copy the contents of the hidden TextEdit to the system clipboard (for pasting into an email, or the like)
+                clipboardTextEdit.selectAll()
+                clipboardTextEdit.copy()
             }
         }
     }

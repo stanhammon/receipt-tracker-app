@@ -281,4 +281,10 @@ ApplicationWindow {
         }
     }
 
+    // this hidden TextEdit field is used for copying receipts to the system clipboard
+    TextEdit{
+        id: clipboardTextEdit
+        visible: false
+    }
+
 }
