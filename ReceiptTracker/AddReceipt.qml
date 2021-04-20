@@ -151,7 +151,7 @@ Item {
                 if( amountNumber===0.0 && tipNumber===0.0 )bContinue = false
 
                 if( bContinue ){
-                    var shortDate = receiptDate.toLocaleDateString(Locale.ShortFormat)
+                    var shortDate = receiptDate.toLocaleDateString(Qt.locale(),"M/d/yyyy")
                     mainwindow.addReceipt(shortDate,textInput_Amount.text,checkBox_Tipped.checked,textInput_TipAmount.text,textInput_Business.text)
                     rootRectangle.visible = false
                     cancelClickRectangle.visible = false
