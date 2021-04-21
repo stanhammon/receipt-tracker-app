@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    FileIO fileIO;
+    FileIO fileIO;  // create the fileIO object (an instance of the FileIO c++ class)
 
     QGuiApplication app(argc, argv);
     app.setOrganizationName("Stan Hammon Software");
@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("Receipt Tracker");
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty("fileio", &fileIO);
+    engine.rootContext()->setContextProperty("fileio", &fileIO);  // give the QML a handle (fileio) for the fileIO c++ object
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {

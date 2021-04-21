@@ -3,8 +3,11 @@ import QtQuick.Controls 2.5
 import QtQml 2.12
 
 Item{
+    // these properties are used to block a loop condition bouncing between the two transition animations
     property bool bBlockNextTimer: false
     property bool bBlockWasTimer: false
+
+    // We have to use Timers (even 0 time timers), because you "can't trigger a state change from a state change"
     Timer{
         id: nextActiveTimerStandard
         interval: 0
@@ -31,14 +34,14 @@ Item{
         }
     }
 
+    // allows for the shwoing/hiding of this button when needed
     function setShowHiddenButtonVisibility( bShow ){ button_ShowHidden.visible = bShow }
 
     Row{
         id: standardButtonsRow
         width: mainwindow.width
 
-        property var testInt: -1
-
+        // contains the three possible positions of the button row: offscreen-left, on screen, and offscreen-right
         states: [
             State {
                 name: "preActiveStandard"; when: mainwindow.nextActive === "standardButtons"
@@ -63,6 +66,8 @@ Item{
                 }
             }
         ]
+
+        // define the two transition between the states defined above: left-hidden to visible, and visible to right-hidden
         transitions: [
             Transition {
                 from: "preActiveStandard"; to: "activeStandard";
@@ -76,6 +81,7 @@ Item{
             }
         ]
 
+        // triggers the addition of a new receipt through AddReceipt.qml
         Button {
             id: button_Add
             anchors.left: parent.left
@@ -85,10 +91,10 @@ Item{
             onClicked: {
                 var component = Qt.createComponent("AddReceipt.qml")
                 var window    = component.createObject(mainwindow)
-                //window.show()
             }
         }
 
+        // when visible, will trigger unhide of all hidden receipts
         Button {
             id: button_ShowHidden
             anchors.horizontalCenter: parent.horizontalCenter
@@ -110,6 +116,7 @@ Item{
             }
         }
 
+        // triggers the copying of all receipts (even if hidden) to the system clipboard for pasting into email, etc
         Button {
             id: button_Copy
             anchors.right: parent.right

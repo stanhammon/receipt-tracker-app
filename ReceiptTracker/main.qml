@@ -9,31 +9,38 @@ ApplicationWindow {
     visible: true
     title: qsTr("Scroll")
 
+    // properties used to trigger state transitions between the different button groupings
     property var wasActive: "none"
     property var isActive: "standardButtons"
     property var nextActive: "none"
+
+    // visual parameters
     property var animationDuration: 750
     property var buttonFontSize: 14
     property var textFontSize: 12
 
+    // instantiate the buttons from StandardButtons.qml
     Repeater{
         id: standardButtonsRepeater
         model: 1
         delegate: StandardButtons {  }
     }
 
+    // instantiate the buttons from DeleteButtons.qml
     Repeater{
         id: deleteButtonsRepeater
         model: 1
         delegate: DeleteButtons {  }
     }
 
+    // instantiate the buttons from HideButtons.qml
     Repeater{
         id: hideButtonsRepeater
         model: 1
         delegate: HideButtons {  }
     }
 
+    // used to set the color of the rows in the receipt ListView
     function setColor( index, useCase ){
         if( index%2  === 0 ){
             if( useCase === "normal" )return "#EEEEEE"
@@ -60,6 +67,7 @@ ApplicationWindow {
             width: parent.width
             height: 40
 
+            // this is the row that contains an individual receipt
             Rectangle {
                 id: receiptRectangle
                 width: parent.width - 10  // this is the 'x' above * 2
@@ -95,9 +103,12 @@ ApplicationWindow {
 
                 }
 
+                // single and double-clicking are used for hiding, and deleting receipts, respectively
                 MouseArea {
                     id: receiptItemMouseArea
                     anchors.fill: parent
+
+                    // select/unselect a receipt for hiding
                     function singleClick(){
                         //listView.testCurrentSelectionType()
                         if( listView.currentSelectionType !== "double" ){  // proceed for "" and "single"
@@ -114,6 +125,8 @@ ApplicationWindow {
                             receiptListModel.set( index, receiptItem )
                         }
                     }
+
+                    // select/unselect a receipt for deletion
                     function doubleClick(){
                         //listView.testCurrentSelectionType()  add this to a startup
                         if( listView.currentSelectionType !== "single" ){  // proceed for "" and "double"
@@ -130,6 +143,9 @@ ApplicationWindow {
                             receiptListModel.set( index, receiptItem )
                         }
                     }
+
+                    // this Timer (and onClicked()) is used to trigger only only click type at a time
+                    // by default, single-click is always triggered, even when double-click is also triggered
                     Timer{
                         id: clickTimer
                         interval: 200
@@ -148,6 +164,7 @@ ApplicationWindow {
         }
 
         // this variable contains the currently active selection mode (after being update by 'testCurrentSelectionType()')
+        // valid values are: "", "single", and "double"
         property var currentSelectionType: ""
 
         //  this function is used to limit selection to a single type at a time (either singleclick of doubleclick)
@@ -160,9 +177,9 @@ ApplicationWindow {
                     break
                 }
             }
+
+            // if surrentSelectionType has changed, trigger the transition to another set of gui buttons
             if( currentSelectionType === "single" ){
-                //standardButtonsRepeater.itemAt(0).visible = false
-                //deleteButtonsRepeater.itemAt(0).visible = false
                 if( isActive != "hideButtons" ){
                     wasActive = isActive
                     isActive = "none"
@@ -224,6 +241,7 @@ ApplicationWindow {
         }
     }
 
+    // function called by AddReceipt.qml to add a new receipt to the ListView
     function addReceipt(date,amount,bTipped,tip,businessName) {
         var totalNumber = Number(amount)
         if( bTipped )totalNumber += Number(tip)
@@ -237,9 +255,10 @@ ApplicationWindow {
 
         listView.updateListModel(true)
         listView.currentIndex = listView.count-1  // scroll to the newly added receipt
-        saveListModel()
+        saveListModel()  // write the updated lsit to file
     }
 
+    // this function adds new receipts at the correct point to maintain date sorting
     function insertReceiptByDate( receipt, dateString ){
         var bInserted = false
         var newReceiptDate = Date.parse(receipt.date)
@@ -257,14 +276,17 @@ ApplicationWindow {
             hiddenReceiptsModel.append( receipt )
     }
 
+    // load the current list of receipts from file upon starting the program
     Component.onCompleted: loadListModel()
 
+    // this function saves the ListView contents to file (using c++ code in FileIO.h)
     function saveListModel() {
         var datastore = JSON.stringify(hiddenReceiptsModel)
         datastore = JSON.parse(datastore)  // this hack is to remove the extra set of "" being erroniously put around the JSON output
         fileio.write( "receipts.json", datastore )
     }
 
+    // this function restores the ListView contents from JSON (using c++ code in FileIO.h)
     function loadListModel() {
         var datastore = fileio.read( "receipts.json" )
         if (datastore !== ""){
@@ -277,7 +299,7 @@ ApplicationWindow {
         }
     }
 
-    // this hidden TextEdit field is used for copying receipts to the system clipboard
+    // this hidden TextEdit field is only used for copying receipts to the system clipboard - it is never visible
     TextEdit{
         id: clipboardTextEdit
         visible: false

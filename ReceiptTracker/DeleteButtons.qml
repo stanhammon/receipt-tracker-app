@@ -3,8 +3,11 @@ import QtQuick.Controls 2.5
 import QtQml 2.12
 
 Item{
+    // these properties are used to block a loop condition bouncing between the two transition animations
     property bool bBlockNextTimer: false
     property bool bBlockWasTimer: false
+
+    // We have to use Timers (even 0 time timers), because you "can't trigger a state change from a state change"
     Timer{
         id: nextActiveTimerDelete
         interval: 0
@@ -32,10 +35,11 @@ Item{
     }
 
     Row{
-        x: -mainwindow.width
+        x: -mainwindow.width  // start off out of view (on the left), in the 'preActive' state
         id: deleteButtonsRow
         width: mainwindow.width
 
+        // contains the three possible positions of the button row: offscreen-left, on screen, and offscreen-right
         states: [
             State {
                 name: "preActiveDelete"; when: mainwindow.nextActive === "deleteButtons"
@@ -61,6 +65,7 @@ Item{
             }
         ]
 
+        // define the two transition between the states defined above: left-hidden to visible, and visible to right-hidden
         transitions: [
             Transition {
                 from: "preActiveDelete"; to: "activeDelete";
@@ -74,6 +79,7 @@ Item{
             }
         ]
 
+        // triggers the deletion of any currently "double" selected receipts
         Button {
             id: button_Delete
             anchors.horizontalCenter: parent.horizontalCenter
@@ -101,6 +107,7 @@ Item{
             }
         }
 
+        // unselects any currently "double" selected receipts
         Button {
             id: button_ClearSelection
             anchors.right: parent.right

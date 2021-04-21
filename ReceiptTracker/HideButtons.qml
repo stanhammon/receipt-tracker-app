@@ -3,8 +3,11 @@ import QtQuick.Controls 2.5
 import QtQml 2.12
 
 Item{
+    // these properties are used to block a loop condition bouncing between the two transition animations
     property bool bBlockNextTimer: false
     property bool bBlockWasTimer: false
+
+    // We have to use Timers (even 0 time timers), because you "can't trigger a state change from a state change"
     Timer{
         id: nextActiveTimerHide
         interval: 0
@@ -32,10 +35,11 @@ Item{
     }
 
     Row{
-        x: -mainwindow.width
+        x: -mainwindow.width  // start off out of view (on the left), in the 'preActive' state
         id: hideButtonsRow
         width: mainwindow.width
 
+        // contains the three possible positions of the button row: offscreen-left, on screen, and offscreen-right
         states: [
             State {
                 name: "preActiveHide"; when: mainwindow.nextActive === "hideButtons"
@@ -61,6 +65,7 @@ Item{
             }
         ]
 
+        // define the two transition between the states defined above: left-hidden to visible, and visible to right-hidden
         transitions: [
             Transition {
                 from: "preActiveHide"; to: "activeHide";
@@ -74,6 +79,7 @@ Item{
             }
         ]
 
+        // triggers the hiding of any currently "single" selected receipts
         Button {
             id: button_Hide
             anchors.horizontalCenter: parent.horizontalCenter
@@ -104,6 +110,7 @@ Item{
             }
         }
 
+        // unselects any currently "single" selected receipts
         Button {
             id: button_ClearSelection2
             anchors.right: parent.right

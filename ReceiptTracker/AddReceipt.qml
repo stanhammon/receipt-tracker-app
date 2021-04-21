@@ -8,6 +8,7 @@ Item {
     id: root
     property date receiptDate: new Date()
 
+    // invisible rectangle used to catch clicks outside of the visible gui area
     Rectangle{
         id:cancelClickRectangle
         anchors.centerIn: parent
@@ -23,11 +24,10 @@ Item {
         }
     }
 
-
-
+    // contains the visible gui area
     Rectangle {
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: -mainwindow.height/6
+        anchors.verticalCenterOffset: -mainwindow.height/6  // is offset "up" on the screen to not interfere with the keyboard, when it appears
 
         id: rootRectangle
         x: 0
@@ -36,11 +36,12 @@ Item {
         height: 330
         color: "#999999"
 
-        // this MouseArea is only here to catch (and ignore) any clicks on the pop-up, so they don't triggger a Cancel
+        // this MouseArea is only here to catch (and ignore) any clicks on the pop-up, so they don't triggger a Cancel from the invisible rectangle above
         MouseArea {
             anchors.fill: parent
         }
 
+        // receipt date
         Text {
             id: text_Date
             x: 135
@@ -52,6 +53,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
 
+        // decrements the receipt date one day per click (if needed)
         Button {
             id: button_Decrement
             x: 27
@@ -68,6 +70,20 @@ Item {
             }
         }
 
+        // label text
+        Text {
+            id: text1
+            x: 14
+            y: 102
+            width: 107
+            height: 25
+            text: qsTr("Amount")
+            font.pixelSize: 18
+            horizontalAlignment: Text.AlignRight
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        // input field for the receipt amount
         TextField {
             id: textInput_Amount
             x: 135
@@ -77,7 +93,7 @@ Item {
             font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             bottomPadding: (height - font.pixelSize)/2
-            inputMethodHints: Qt.ImhDigitsOnly
+            inputMethodHints: Qt.ImhDigitsOnly  // request that a number keyboard be displayed
             background: Rectangle {
                 radius: 4
                 //implicitWidth: parent.width
@@ -86,7 +102,7 @@ Item {
                 border.width: 1
             }
             leftPadding: currencyLabel.width + currencyLabel.anchors.leftMargin + 2
-            validator: RegExpValidator {
+            validator: RegExpValidator {  // only allow input of numeric characters
                 regExp: /([+-]?[0-9]+(\.[0-9]{2})?)/
             }
             Text {
@@ -103,6 +119,20 @@ Item {
             }
         }
 
+        // label text
+        Text {
+            id: text2
+            x: 14
+            y: 160
+            width: 107
+            height: 25
+            text: qsTr("Business")
+            font.pixelSize: 18
+            horizontalAlignment: Text.AlignRight
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        // input field for the business name
         TextField {
             id: textInput_Business
             x: 135
@@ -123,6 +153,63 @@ Item {
             }
         }
 
+        // enables/disables the tip entry field
+        CheckBox {
+            id: checkBox_Tipped
+            x: 14
+            y: 205
+            width: 113
+            height: 48
+            text: qsTr("Tipped")
+            onClicked: {
+                textInput_TipAmount.enabled = checked
+                if(checked){
+                    text1.text="Pre-tip"
+                    textInput_TipAmount.text = ""
+                }else{
+                    text1.text="Amount"
+                    textInput_TipAmount.text = "0.00"
+                }
+            }
+        }
+
+        // input field for the tip
+        TextField {
+            id: textInput_TipAmount
+            x: 135
+            y: 211
+            width: 181
+            height: 35
+            font.pixelSize: 18
+            verticalAlignment: Text.AlignVCenter
+            text: "0.00"
+            enabled: false
+            inputMethodHints: Qt.ImhDigitsOnly  // request that a number keyboard be displayed
+            Text {
+                id: currencyLabel1
+                color: parent.color
+                text: qsTr("$")
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                font.pixelSize: parent.font.pixelSize
+                verticalAlignment: Text.AlignVCenter
+                anchors.leftMargin: 5
+                bottomPadding: (height - font.pixelSize)/2
+            }
+            background: Rectangle {
+                radius: 4
+                border.color: "#333333"
+                border.width: 1
+            }
+            validator: RegExpValidator {  // only allow input of numeric characters
+                regExp: /([+-]?[0-9]+(\.[0-9]{2})?)/
+            }
+            leftPadding: currencyLabel1.width + currencyLabel1.anchors.leftMargin + 2
+            bottomPadding: (height - font.pixelSize)/2
+        }
+
+        // cancels (and hides) the form
         Button {
             id: button_Cancel
             x: 87
@@ -136,6 +223,7 @@ Item {
             }
         }
 
+        // adds the new receipt to the ListView, and triggers saving out to disk
         Button {
             id: button_Save
             x: 234
@@ -159,108 +247,6 @@ Item {
             }
         }
 
-        Text {
-            id: text1
-            x: 14
-            y: 102
-            width: 107
-            height: 25
-            text: qsTr("Amount")
-            font.pixelSize: 18
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        Text {
-            id: text2
-            x: 14
-            y: 160
-            width: 107
-            height: 25
-            text: qsTr("Business")
-            font.pixelSize: 18
-            horizontalAlignment: Text.AlignRight
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        CheckBox {
-            id: checkBox_Tipped
-            x: 14
-            y: 205
-            width: 113
-            height: 48
-            text: qsTr("Tipped")
-            onClicked: {
-                textInput_TipAmount.enabled = checked
-                if(checked){
-                    text1.text="Pre-tip"
-                    textInput_TipAmount.text = ""
-                }else{
-                    text1.text="Amount"
-                    textInput_TipAmount.text = "0.00"
-                }
-            }
-        }
-
-        TextField {
-            id: textInput_TipAmount
-            x: 135
-            y: 211
-            width: 181
-            height: 35
-            font.pixelSize: 18
-            verticalAlignment: Text.AlignVCenter
-            text: "0.00"
-            enabled: false
-            inputMethodHints: Qt.ImhDigitsOnly
-            Text {
-                id: currencyLabel1
-                color: parent.color
-                text: qsTr("$")
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                font.pixelSize: parent.font.pixelSize
-                verticalAlignment: Text.AlignVCenter
-                anchors.leftMargin: 5
-                bottomPadding: (height - font.pixelSize)/2
-            }
-            background: Rectangle {
-                radius: 4
-                border.color: "#333333"
-                border.width: 1
-            }
-            validator: RegExpValidator {
-                regExp: /([+-]?[0-9]+(\.[0-9]{2})?)/
-            }
-            leftPadding: currencyLabel1.width + currencyLabel1.anchors.leftMargin + 2
-            bottomPadding: (height - font.pixelSize)/2
-        }
-
     }
-
-    /*
-    DatePickerDialog {
-         id: tDialog
-         titleText: "Date of birth"
-         onAccepted: callbackFunction()
-     }
-
-     function launchDialog() {
-         tDialog.open();
-     }
-
-     function launchDialogToToday() {
-         var d = new Date();
-         tDialog.year = d.getFullYear();
-         tDialog.month = d.getMonth();
-         tDialog.day = d.getDate();
-         tDialog.open();
-     }
-
-     function callbackFunction() {
-         result.text = tDialog.year + " " + tDialog.month + " " + tDialog.day
-     }
-    */
 
 }

@@ -5,6 +5,11 @@
 #include <QFile>
 #include <QTextStream>
 
+
+//
+//  This is the IO class for saving JSON to file for restoring the program state upon restart
+//  Wierdly, QML doesn't have a direct provision for this
+//
 class FileIO : public QObject
 {
     Q_OBJECT
@@ -39,7 +44,7 @@ public slots:
     }
 
 public:
-    FileIO() {}
+    FileIO() {}  // constructor doesn't do anything special
 };
 
 #endif // FILEIO_H
