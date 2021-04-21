@@ -67,6 +67,7 @@ ApplicationWindow {
                 color: setColor( index, "normal" )
 
                 Row{
+                    anchors.verticalCenter: parent.verticalCenter
                     id: row1
                     spacing: 10
 
