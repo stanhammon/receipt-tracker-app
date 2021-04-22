@@ -37,6 +37,12 @@ Item{
     // allows for the shwoing/hiding of this button when needed
     function setShowHiddenButtonVisibility( bShow ){ button_ShowHidden.visible = bShow }
 
+    // used for populating initial values when duplicating a recipt
+    function makeDuplicateReceipt( amount, name, bTipped, tipAmount ){
+        var window = button_Add.showWidget()
+        window.setStartingValues( amount, name, bTipped, tipAmount )
+    }
+
     Row{
         id: standardButtonsRow
         width: mainwindow.width
@@ -88,9 +94,11 @@ Item{
             anchors.margins: 30
             text: qsTr("Add Receipt")
             font.pointSize: mainwindow.buttonFontSize
-            onClicked: {
+            onClicked: showWidget()
+            function showWidget(){
                 var component = Qt.createComponent("AddReceipt.qml")
                 var window    = component.createObject(mainwindow)
+                return window
             }
         }
 
@@ -130,7 +138,7 @@ Item{
                 for( var i=0; i<hiddenReceiptsModel.count; i++ ){
                     var receiptText = ""
                     var receipt = hiddenReceiptsModel.get(i)
-                    receiptText = receipt.date + "   " + receipt.amount + "   " + receipt.businessName
+                    receiptText = receipt.date + "   " + receipt.totalAmount + "   " + receipt.businessName
                     clipboardTextEdit.append(receiptText)
                 }
 

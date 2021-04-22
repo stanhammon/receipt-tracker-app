@@ -54,6 +54,16 @@ ApplicationWindow {
         return "#FFFFOO"  // yellow indicates a logic failure above
     }
 
+    // returns the selected receipt (only one receipt) - should only be used with the Duplicate button
+    function getSelectedReceipt(){
+        for( var i=0; i<receiptListModel.count; i++ ){
+            var receipt = receiptListModel.get(i)
+            if( receipt.selectionType === "single" )
+                return receipt
+        }
+        return ""
+    }
+
     ListView {
         id: listView
         x: 5
@@ -89,7 +99,7 @@ ApplicationWindow {
 
                     Text {
                         font.pointSize: mainwindow.textFontSize
-                        text: amount
+                        text: totalAmount
                         anchors.verticalCenter: parent.verticalCenter
                         width: 12 * mainwindow.textFontSize
                         horizontalAlignment: Text.AlignRight
@@ -166,17 +176,26 @@ ApplicationWindow {
         // this variable contains the currently active selection mode (after being update by 'testCurrentSelectionType()')
         // valid values are: "", "single", and "double"
         property var currentSelectionType: ""
+        property var currentSelectionCount: 0
 
         //  this function is used to limit selection to a single type at a time (either singleclick of doubleclick)
         function testCurrentSelectionType(){
             currentSelectionType = ""
+            currentSelectionCount = 0
             for (var i=0; i<receiptListModel.count; i++ ){
                 var thisType = receiptListModel.get(i).selectionType
                 if( thisType !== "" ){
-                    currentSelectionType = thisType
-                    break
+                    if( currentSelectionType === "" )  // make the
+                        currentSelectionType = thisType
+                    currentSelectionCount++
                 }
             }
+
+            // show the Duplicate button if only 1 receipt is selected for "hiding"
+            if( currentSelectionType === "single" && currentSelectionCount === 1 )
+                hideButtonsRepeater.itemAt(0).setShowDuplicateButtonVisibility(true)
+            else
+                hideButtonsRepeater.itemAt(0).setShowDuplicateButtonVisibility(false)
 
             // if surrentSelectionType has changed, trigger the transition to another set of gui buttons
             if( currentSelectionType === "single" ){
@@ -244,13 +263,16 @@ ApplicationWindow {
     // function called by AddReceipt.qml to add a new receipt to the ListView
     function addReceipt(date,amount,bTipped,tip,businessName) {
         var totalNumber = Number(amount)
-        if( bTipped )totalNumber += Number(tip)
+        if( bTipped )
+            totalNumber += Number(tip)
+        else
+            tip = "0.00"
         var totalAmount = "$" + totalNumber
         var tippedAmount = (bTipped) ? " (" + amount + "+" + tip + ")" : ""
         totalAmount += tippedAmount
         var uid = Date.now()  // using milliseconds since Unix Epoch (1/1/1970) as a UID - fine since receipts have to be manually entered
 
-        var receiptJson = {date: date, amount: totalAmount, businessName: businessName, selectionType: "", isVisible:true, uuid:uid}
+        var receiptJson = {date:date, totalAmount:totalAmount, businessName:businessName, selectionType:"", isVisible:true, uuid:uid, amount:amount, bTipped:bTipped, tip:tip}
         insertReceiptByDate( receiptJson, date )
 
         listView.updateListModel(true)

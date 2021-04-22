@@ -8,6 +8,18 @@ Item {
     id: root
     property date receiptDate: new Date()
 
+    // used to set the starting values when Add Receipt is triggered by the Duplicate button
+    function setStartingValues( amount, name, bTipped, tipAmount ){
+        textInput_Amount.text = amount
+        textInput_Business.text = name
+        if( bTipped === true ){
+            textInput_TipAmount.enabled = true
+            text1.text="Pre-tip"
+            checkBox_Tipped.checked = true
+            textInput_TipAmount.text = tipAmount
+        }
+    }
+
     // invisible rectangle used to catch clicks outside of the visible gui area
     Rectangle{
         id:cancelClickRectangle

@@ -34,6 +34,9 @@ Item{
         }
     }
 
+    // allows for the shwoing/hiding of this button when needed
+    function setShowDuplicateButtonVisibility( bShow ){ button_Duplicate.visible = bShow }
+
     Row{
         x: -mainwindow.width  // start off out of view (on the left), in the 'preActive' state
         id: hideButtonsRow
@@ -79,6 +82,22 @@ Item{
             }
         ]
 
+        // copies the values from an old receipt into a new Add Receipt form for easy duplication (intended as aid for common transactions)
+        Button {
+            id: button_Duplicate
+            anchors.left: parent.left
+            anchors.margins: 30
+            text: qsTr("Duplicate")
+            font.pointSize: mainwindow.buttonFontSize
+            onClicked: {
+                var receipt = mainwindow.getSelectedReceipt()
+                if( receipt !== "" ){
+                    standardButtonsRepeater.itemAt(0).makeDuplicateReceipt( receipt.amount, receipt.businessName, receipt.bTipped, receipt.tip )
+                }
+                button_ClearSelection2.clearSelection()
+            }
+        }
+
         // triggers the hiding of any currently "single" selected receipts
         Button {
             id: button_Hide
@@ -117,7 +136,8 @@ Item{
             anchors.margins: 30
             text: qsTr("Clear Selection")
             font.pointSize: mainwindow.buttonFontSize
-            onClicked: {
+            onClicked: clearSelection()
+            function clearSelection(){
                 for (var i=0; i<receiptListModel.count; i++ ){
                     var listItem = receiptListModel.get(i)
                     if( listItem.selectionType === "single" ){
