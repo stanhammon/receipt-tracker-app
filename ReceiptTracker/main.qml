@@ -267,7 +267,7 @@ ApplicationWindow {
             totalNumber += Number(tip)
         else
             tip = "0.00"
-        var totalAmount = "$" + totalNumber
+        var totalAmount = "$" + Number(totalNumber).toLocaleString(Qt.locale("us"),'f',2)
         var tippedAmount = (bTipped) ? " (" + amount + "+" + tip + ")" : ""
         totalAmount += tippedAmount
         var uid = Date.now()  // using milliseconds since Unix Epoch (1/1/1970) as a UID - fine since receipts have to be manually entered
